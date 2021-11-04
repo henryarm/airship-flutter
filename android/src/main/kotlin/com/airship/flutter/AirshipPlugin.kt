@@ -19,6 +19,10 @@ import com.urbanairship.util.DateUtils
 import com.urbanairship.util.UAStringUtil
 import com.urbanairship.messagecenter.webkit.MessageWebView
 import com.urbanairship.messagecenter.webkit.MessageWebViewClient
+import com.urbanairship.push.PushMessage
+import com.urbanairship.push.PushProviderBridge
+import com.urbanairship.push.fcm.AirshipFirebaseIntegration
+import com.urbanairship.push.fcm.FcmPushProvider
 import java.lang.NumberFormatException
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
@@ -174,6 +178,8 @@ class AirshipPlugin : MethodCallHandler, FlutterPlugin {
             "getPushTokenRegistrationEnabled" -> getPushTokenRegistrationEnabled(result)
             "setDataCollectionEnabled" -> setDataCollectionEnabled(call, result)
             "setPushTokenRegistrationEnabled" -> setPushTokenRegistrationEnabled(call, result)
+            "processNewToken" -> AirshipFirebaseIntegration.processNewToken(context)
+            "onMessageReceived" -> processMessage(call)
 
             else -> result.notImplemented()
         }
@@ -486,4 +492,10 @@ class AirshipPlugin : MethodCallHandler, FlutterPlugin {
     fun <T> uncheckedCast(value: Any): T {
         return value as T
     }
+
+    private fun processMessage(call: MethodCall) {
+        PushProviderBridge.processPush(FcmPushProvider::class.java, PushMessage(call.arguments as? HashMap<String, String> ?: mapOf()))
+            .execute(context)
+    }
+
 }

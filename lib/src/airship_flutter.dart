@@ -343,4 +343,20 @@ class Airship {
       return Future.value();
     }
   }
+
+  static Future<void> processNewToken() async {
+    if (!Platform.isAndroid) {
+      print('This platform does not supported');
+      return;
+    }
+    return await _channel.invokeMethod('processNewToken');
+  }
+
+  static Future<void> onMessageReceived(Map<String, dynamic>? message) async {
+    if (!Platform.isAndroid) {
+      print('This platform does not supported');
+      return;
+    }
+    return await _channel.invokeMethod('onMessageReceived', message);
+  }
 }
