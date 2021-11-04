@@ -179,7 +179,7 @@ class AirshipPlugin : MethodCallHandler, FlutterPlugin {
             "setDataCollectionEnabled" -> setDataCollectionEnabled(call, result)
             "setPushTokenRegistrationEnabled" -> setPushTokenRegistrationEnabled(call, result)
             "processNewToken" -> AirshipFirebaseIntegration.processNewToken(context)
-            "onMessageReceived" -> processMessage(call)
+            "onMessageReceived" -> processMessageSync(call)
 
             else -> result.notImplemented()
         }
@@ -493,9 +493,9 @@ class AirshipPlugin : MethodCallHandler, FlutterPlugin {
         return value as T
     }
 
-    private fun processMessage(call: MethodCall) {
+    private fun processMessageSync(call: MethodCall) {
         PushProviderBridge.processPush(FcmPushProvider::class.java, PushMessage(call.arguments as? HashMap<String, String> ?: mapOf()))
-            .execute(context)
+            .executeSync(context)
     }
 
 }
