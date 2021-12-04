@@ -146,6 +146,7 @@ class AirshipPlugin : MethodCallHandler, FlutterPlugin {
     override fun onMethodCall(call: MethodCall, result: Result) {
         when (call.method) {
             "getChannelId" -> getChannelId(result)
+            "getPushToken" -> getPushToken(result)
             "setUserNotificationsEnabled" -> setUserNotificationsEnabled(call, result)
             "getUserNotificationsEnabled" -> getUserNotificationsEnabled(result)
             "clearNotification" -> clearNotification(call, result)
@@ -466,10 +467,13 @@ class AirshipPlugin : MethodCallHandler, FlutterPlugin {
         result.success(InAppAutomation.shared().isPaused)
     }
 
-    fun getChannelId(result: Result) {
+    private fun getChannelId(result: Result) {
         result.success(UAirship.shared().channel.id)
     }
 
+    private fun getPushToken(result: Result) {
+        result.success(UAirship.shared().pushManager.pushToken)
+    }
 
     private fun enableChannelCreation(result: Result) {
         UAirship.shared().channel.enableChannelCreation()

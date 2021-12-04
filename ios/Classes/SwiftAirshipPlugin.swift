@@ -101,6 +101,8 @@ UADeepLinkDelegate, UAPushNotificationDelegate {
         switch call.method {
         case "getChannelId":
             getChannelId(call, result: result)
+        case "getPushToken":
+            getPushToken(call, result: result)
         case "setUserNotificationsEnabled":
             setUserNotificationsEnabled(call, result: result)
         case "getUserNotificationsEnabled":
@@ -174,6 +176,10 @@ UADeepLinkDelegate, UAPushNotificationDelegate {
 
     private func getChannelId(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
         result(UAirship.channel().identifier)
+    }
+    
+    private func getPushToken(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
+        result(UAirship.push().deviceToken)
     }
 
     private func getDataCollectionEnabled(_ call: FlutterMethodCall, result: @escaping FlutterResult) {

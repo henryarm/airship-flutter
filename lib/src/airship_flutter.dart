@@ -1,8 +1,10 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+
 import 'package:airship_flutter/src/attribute_editor.dart';
 import 'package:flutter/services.dart';
+
 import 'custom_event.dart';
 import 'tag_group_editor.dart';
 
@@ -73,11 +75,7 @@ class NotificationResponseEvent {
   final Map<String, dynamic>? payload;
 
   const NotificationResponseEvent._internal(
-    this.actionId,
-    this.isForeground,
-    this.notification,
-    this.payload
-  );
+      this.actionId, this.isForeground, this.notification, this.payload);
 
   static NotificationResponseEvent _fromJson(Map<String, dynamic> json) {
     var actionId = json["action_id"];
@@ -159,6 +157,10 @@ class Airship {
     return await _channel.invokeMethod('getChannelId');
   }
 
+  static Future<String?> get pushToken async {
+    return await _channel.invokeMethod('getPushToken');
+  }
+
   static Future<bool?> setUserNotificationsEnabled(bool enabled) async {
     return await _channel.invokeMethod('setUserNotificationsEnabled', enabled);
   }
@@ -195,7 +197,8 @@ class Airship {
     return await _channel.invokeMethod('removeTags', tags);
   }
 
-  @deprecated static AttributeEditor editAttributes() {
+  @deprecated
+  static AttributeEditor editAttributes() {
     return AttributeEditor('editAttributes', _channel);
   }
 
@@ -241,7 +244,8 @@ class Airship {
   }
 
   static Future<List<Notification>> get activeNotifications async {
-    List notifications = await (_channel.invokeMethod('getActiveNotifications'));
+    List notifications =
+        await (_channel.invokeMethod('getActiveNotifications'));
     return notifications.map((dynamic payload) {
       return Notification._fromJson(Map<String, dynamic>.from(payload));
     }).toList();
@@ -258,7 +262,7 @@ class Airship {
   static Stream<void>? get onShowInbox {
     return _getEventStream("SHOW_INBOX");
   }
-  
+
   static Stream<String?> get onShowInboxMessage {
     return _getEventStream("SHOW_INBOX_MESSAGE")!
         .map((dynamic value) => jsonDecode(value) as String?);
@@ -309,7 +313,8 @@ class Airship {
   }
 
   static Future<bool?> setPushTokenRegistrationEnabled(bool enabled) async {
-    return await _channel.invokeMethod('setPushTokenRegistrationEnabled', enabled);
+    return await _channel.invokeMethod(
+        'setPushTokenRegistrationEnabled', enabled);
   }
 
   static Future<bool> isAutoBadgeEnabled() async {
