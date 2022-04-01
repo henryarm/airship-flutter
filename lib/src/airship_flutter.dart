@@ -1,13 +1,15 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+
 import 'package:flutter/services.dart';
-import 'custom_event.dart';
-import 'tag_group_editor.dart';
-import 'subscription_list_editor.dart';
-import 'scoped_subscription_list_editor.dart';
-import 'preference_center_config.dart';
+
 import 'attribute_editor.dart';
+import 'custom_event.dart';
+import 'preference_center_config.dart';
+import 'scoped_subscription_list_editor.dart';
+import 'subscription_list_editor.dart';
+import 'tag_group_editor.dart';
 
 class InboxMessage {
   final String? title;
@@ -73,7 +75,8 @@ class SubscriptionList {
   final List<String>? channelSubscriptionLists;
   final List<ContactSubscriptionList>? contactSubscriptionLists;
 
-  const SubscriptionList._internal(this.channelSubscriptionLists, this.contactSubscriptionLists);
+  const SubscriptionList._internal(
+      this.channelSubscriptionLists, this.contactSubscriptionLists);
 
   static SubscriptionList _fromJson(Map<String, dynamic> json) {
     var channelSubscriptionLists = <String>[];
@@ -83,10 +86,12 @@ class SubscriptionList {
     var contactSubscriptionLists = <ContactSubscriptionList>[];
     if (json["contact"] != null) {
       var lists = Map<String, dynamic>.from(json["contact"]);
-      lists.forEach((k, v) => contactSubscriptionLists.add(ContactSubscriptionList._fromJson(k,List<String>.from(v))));
+      lists.forEach((k, v) => contactSubscriptionLists
+          .add(ContactSubscriptionList._fromJson(k, List<String>.from(v))));
     }
 
-    return SubscriptionList._internal(channelSubscriptionLists, contactSubscriptionLists);
+    return SubscriptionList._internal(
+        channelSubscriptionLists, contactSubscriptionLists);
   }
 
   @override
@@ -101,7 +106,8 @@ class ContactSubscriptionList {
 
   const ContactSubscriptionList._internal(this.identifier, this.scopes);
 
-  static ContactSubscriptionList _fromJson(String identifier, List<String> scopes) {
+  static ContactSubscriptionList _fromJson(
+      String identifier, List<String> scopes) {
     return ContactSubscriptionList._internal(identifier, scopes);
   }
 
@@ -118,11 +124,7 @@ class NotificationResponseEvent {
   final Map<String, dynamic>? payload;
 
   const NotificationResponseEvent._internal(
-    this.actionId,
-    this.isForeground,
-    this.notification,
-    this.payload
-  );
+      this.actionId, this.isForeground, this.notification, this.payload);
 
   static NotificationResponseEvent _fromJson(Map<String, dynamic> json) {
     var actionId = json["action_id"];
@@ -201,15 +203,16 @@ class Airship {
   }
 
   static Future<bool> takeOff(String appKey, String appSecret) async {
-    Map<String, String> args = {
-      "app_key": appKey,
-      "app_secret": appSecret
-    };
+    Map<String, String> args = {"app_key": appKey, "app_secret": appSecret};
     return await _channel.invokeMethod('takeOff', args);
   }
 
   static Future<String?> get channelId async {
     return await _channel.invokeMethod('getChannelId');
+  }
+
+  static Future<String?> get pushToken async {
+    return await _channel.invokeMethod('getPushToken');
   }
 
   static Future<bool?> setUserNotificationsEnabled(bool enabled) async {
@@ -248,7 +251,8 @@ class Airship {
     return await _channel.invokeMethod('removeTags', tags);
   }
 
-  @deprecated static AttributeEditor editAttributes() {
+  @deprecated
+  static AttributeEditor editAttributes() {
     return AttributeEditor('editAttributes', _channel);
   }
 
@@ -265,7 +269,8 @@ class Airship {
   }
 
   static ScopedSubscriptionListEditor editContactSubscriptionLists() {
-    return ScopedSubscriptionListEditor('editContactSubscriptionLists', _channel);
+    return ScopedSubscriptionListEditor(
+        'editContactSubscriptionLists', _channel);
   }
 
   static TagGroupEditor editChannelTagGroups() {
@@ -289,6 +294,10 @@ class Airship {
     return await _channel.invokeMethod('deleteInboxMessage', message.messageId);
   }
 
+  static Future<void> deleteAllInboxMessage() async {
+    return await _channel.invokeMethod('deleteAllInboxMessage');
+  }
+
   static Future<bool?> refreshInbox() async {
     return _channel.invokeMethod("refreshInbox");
   }
@@ -302,7 +311,8 @@ class Airship {
   }
 
   static Future<List<Notification>> get activeNotifications async {
-    List notifications = await (_channel.invokeMethod('getActiveNotifications'));
+    List notifications =
+        await (_channel.invokeMethod('getActiveNotifications'));
     return notifications.map((dynamic payload) {
       return Notification._fromJson(Map<String, dynamic>.from(payload));
     }).toList();
@@ -319,7 +329,7 @@ class Airship {
   static Stream<void>? get onShowInbox {
     return _getEventStream("SHOW_INBOX");
   }
-  
+
   static Stream<String?> get onShowInboxMessage {
     return _getEventStream("SHOW_INBOX_MESSAGE")!
         .map((dynamic value) => jsonDecode(value) as String?);
@@ -415,16 +425,21 @@ class Airship {
   }
 
   static Future<void> openPreferenceCenter(String preferenceCenterID) async {
-    return await _channel.invokeMethod('openPreferenceCenter', preferenceCenterID);
+    return await _channel.invokeMethod(
+        'openPreferenceCenter', preferenceCenterID);
   }
 
-  static Future<SubscriptionList> getSubscriptionLists(List<String> subscriptionListTypes) async {
-    var lists = await (_channel.invokeMethod("getSubscriptionLists", subscriptionListTypes));
+  static Future<SubscriptionList> getSubscriptionLists(
+      List<String> subscriptionListTypes) async {
+    var lists = await (_channel.invokeMethod(
+        "getSubscriptionLists", subscriptionListTypes));
     return SubscriptionList._fromJson(Map<String, dynamic>.from(lists));
   }
 
-  static Future<PreferenceCenterConfig?> getPreferenceCenterConfig(String preferenceCenterID) async {
-    var config = await _channel.invokeMethod('getPreferenceCenterConfig', preferenceCenterID);
+  static Future<PreferenceCenterConfig?> getPreferenceCenterConfig(
+      String preferenceCenterID) async {
+    var config = await _channel.invokeMethod(
+        'getPreferenceCenterConfig', preferenceCenterID);
     return PreferenceCenterConfig.fromJson(jsonDecode(config));
   }
 
@@ -432,4 +447,3 @@ class Airship {
     return await _channel.invokeMethod('setAutoLaunchDefaultPreferenceCenter');
   }
 }
-

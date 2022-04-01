@@ -178,6 +178,7 @@ class AirshipPlugin : MethodCallHandler, FlutterPlugin {
 
         when (call.method) {
             "getChannelId" -> getChannelId(result)
+            "getPushToken" -> getPushToken(result)
             "setUserNotificationsEnabled" -> setUserNotificationsEnabled(call, result)
             "getUserNotificationsEnabled" -> getUserNotificationsEnabled(result)
             "clearNotification" -> clearNotification(call, result)
@@ -198,6 +199,7 @@ class AirshipPlugin : MethodCallHandler, FlutterPlugin {
             "refreshInbox" -> refreshInbox(result)
             "markInboxMessageRead" -> markInboxMessageRead(call, result)
             "deleteInboxMessage" -> deleteInboxMessage(call, result)
+            "deleteAllInboxMessage" -> deleteAllInboxMessage(call, result)
             "setInAppAutomationPaused" -> setInAppAutomationPaused(call, result)
             "getInAppAutomationPaused" -> getInAppAutomationPaused(result)
             "enableChannelCreation" -> enableChannelCreation(result)
@@ -271,6 +273,11 @@ class AirshipPlugin : MethodCallHandler, FlutterPlugin {
     private fun deleteInboxMessage(call: MethodCall, result: Result) {
         val messageId = call.arguments as String?
         MessageCenter.shared().inbox.deleteMessages(setOf(messageId))
+        result.success(null)
+    }
+
+    private fun deleteAllInboxMessage(call: MethodCall, result: Result) {
+        MessageCenter.shared().inbox.deleteMessages(MessageCenter.shared().inbox.messageIds)
         result.success(null)
     }
 
@@ -511,6 +518,9 @@ class AirshipPlugin : MethodCallHandler, FlutterPlugin {
         result.success(UAirship.shared().channel.id)
     }
 
+    private fun getPushToken(result: Result) {
+        result.success(UAirship.shared().pushManager.pushToken)
+    }
 
     private fun enableChannelCreation(result: Result) {
         UAirship.shared().channel.enableChannelCreation()

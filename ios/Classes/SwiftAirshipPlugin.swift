@@ -60,6 +60,8 @@ public class SwiftAirshipPlugin: NSObject, FlutterPlugin, PreferenceCenterOpenDe
         switch call.method {
         case "getChannelId":
             getChannelId(call, result: result)
+        case "getPushToken":
+            getPushToken(call, result: result)
         case "setUserNotificationsEnabled":
             setUserNotificationsEnabled(call, result: result)
         case "getUserNotificationsEnabled":
@@ -98,6 +100,8 @@ public class SwiftAirshipPlugin: NSObject, FlutterPlugin, PreferenceCenterOpenDe
             markInboxMessageRead(call, result: result)
         case "deleteInboxMessage":
             deleteInboxMessage(call, result: result)
+        case "deleteAllInboxMessage":
+            deleteAllInboxMessage(call, result: result)
         case "setInAppAutomationPaused":
             setInAppAutomationPaused(call, result: result)
         case "getInAppAutomationPaused":
@@ -147,6 +151,10 @@ public class SwiftAirshipPlugin: NSObject, FlutterPlugin, PreferenceCenterOpenDe
 
     private func getChannelId(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
         result(Airship.channel.identifier)
+    }
+
+    private func getPushToken(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
+        result(Airship.push.deviceToken)
     }
 
     private func setUserNotificationsEnabled(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
@@ -433,6 +441,12 @@ public class SwiftAirshipPlugin: NSObject, FlutterPlugin, PreferenceCenterOpenDe
     private func deleteInboxMessage(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
         let message = MessageCenter.shared.messageList.message(forID: call.arguments as! String)
         MessageCenter.shared.messageList.markMessagesDeleted([message as Any]) {
+            result(nil)
+        }
+    }
+
+    private func deleteAllInboxMessage(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
+        MessageCenter.shared.messageList.markMessagesDeleted(MessageCenter.shared.messageList.messages) {
             result(nil)
         }
     }
